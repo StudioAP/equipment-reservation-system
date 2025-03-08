@@ -5,9 +5,12 @@ from datetime import datetime
 
 app = Flask(__name__, static_folder='app/static', template_folder='app/templates')
 
+# データベースのパス設定
+DB_PATH = os.environ.get('DATABASE_URL', 'reservation.db')
+
 # データベースの初期化
 def init_db():
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     # 利用者テーブル
@@ -67,7 +70,7 @@ def index():
 # 利用者一覧を取得
 @app.route('/api/users')
 def get_users():
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM users ORDER BY name')
@@ -78,7 +81,7 @@ def get_users():
 # 備品一覧を取得
 @app.route('/api/items')
 def get_items():
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM items ORDER BY name')
@@ -91,7 +94,7 @@ def get_items():
 def get_reservations():
     date = request.args.get('date')
     
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -134,7 +137,7 @@ def create_reservation():
             return jsonify({'error': '連続していない時間枠は選択できません'}), 400
     
     # 予約の重複チェック
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     cursor.execute('''
@@ -168,7 +171,7 @@ def create_reservation():
 # 予約を削除
 @app.route('/api/reservations/<int:id>', methods=['DELETE'])
 def delete_reservation(id):
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     cursor.execute('DELETE FROM reservations WHERE id = ?', (id,))
@@ -185,7 +188,7 @@ def admin():
 # 全予約を削除
 @app.route('/api/reservations/all', methods=['DELETE'])
 def delete_all_reservations():
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     cursor.execute('DELETE FROM reservations')
@@ -203,7 +206,7 @@ def add_user():
     if not name:
         return jsonify({'error': '利用者名を入力してください'}), 400
     
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     try:
@@ -225,7 +228,7 @@ def add_item():
     if not name:
         return jsonify({'error': '備品名を入力してください'}), 400
     
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     try:
@@ -240,7 +243,7 @@ def add_item():
 
 @app.route('/api/reservations/all')
 def get_all_reservations():
-    conn = sqlite3.connect('reservation.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
     
@@ -265,6 +268,6 @@ def get_all_reservations():
     return jsonify({'reservations': reservations})
 
 if __name__ == '__main__':
-    if not os.path.exists('reservation.db'):
+    if not os.path.exists(DB_PATH):
         init_db()
     app.run(debug=True, port=5003) 
