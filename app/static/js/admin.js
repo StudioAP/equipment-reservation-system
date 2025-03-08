@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const baseURL = window.location.origin;
+    
     // DOM要素
-    const usersTableBody = document.getElementById('users-body');
-    const itemsTableBody = document.getElementById('items-body');
-    const addUserAdminBtn = document.getElementById('add-user-admin-btn');
-    const addItemAdminBtn = document.getElementById('add-item-admin-btn');
-    const deleteAllReservationsBtn = document.getElementById('delete-all-reservations-btn');
+    const usersList = document.getElementById('users-list');
+    const itemsList = document.getElementById('items-list');
+    const userForm = document.getElementById('add-user-form');
+    const itemForm = document.getElementById('add-item-form');
+    const deleteAllBtn = document.getElementById('delete-all-btn');
     
     // モーダル関連
     const addUserModal = document.getElementById('add-user-modal');
@@ -24,18 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchItems();
     
     // イベントリスナーの設定
-    addUserAdminBtn.addEventListener('click', function() {
-        addUserModal.style.display = 'block';
-    });
-    
-    addItemAdminBtn.addEventListener('click', function() {
-        addItemModal.style.display = 'block';
-    });
-    
-    deleteAllReservationsBtn.addEventListener('click', function() {
-        confirmDeleteAllModal.style.display = 'block';
-    });
-    
     addUserForm.addEventListener('submit', function(e) {
         e.preventDefault();
         addUser();
@@ -82,146 +72,186 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 利用者リストを取得する関数
     function fetchUsers() {
-        fetch('/api/users')
-        .then(response => response.json())
-        .then(data => {
-            let html = '';
-            data.forEach(user => {
-                html += `
-                <tr>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                </tr>
+        fetch(`${baseURL}/api/users`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('利用者の取得に失敗しました');
+                }
+                return response.json();
+            })
+            .then(users => {
+                let html = `
+                    <tr>
+                        <th>ID</th>
+                        <th>利用者名</th>
+                    </tr>
+                `;
+                
+                if (users.length === 0) {
+                    html += `
+                        <tr>
+                            <td colspan="2" style="text-align: center;">利用者がいません</td>
+                        </tr>
+                    `;
+                } else {
+                    users.forEach(user => {
+                        html += `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                usersList.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                usersList.innerHTML = `
+                    <tr>
+                        <td colspan="2" style="text-align: center; color: red;">
+                            利用者データの取得に失敗しました
+                        </td>
+                    </tr>
                 `;
             });
-            usersTableBody.innerHTML = html;
-        })
-        .catch(error => {
-            console.error('利用者リストの取得に失敗しました。', error);
-        });
     }
     
     // 備品リストを取得する関数
     function fetchItems() {
-        fetch('/api/items')
-        .then(response => response.json())
-        .then(data => {
-            let html = '';
-            data.forEach(item => {
-                html += `
-                <tr>
-                    <td>${item.id}</td>
-                    <td>${item.name}</td>
-                </tr>
+        fetch(`${baseURL}/api/items`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('備品の取得に失敗しました');
+                }
+                return response.json();
+            })
+            .then(items => {
+                let html = `
+                    <tr>
+                        <th>ID</th>
+                        <th>備品名</th>
+                    </tr>
+                `;
+                
+                if (items.length === 0) {
+                    html += `
+                        <tr>
+                            <td colspan="2" style="text-align: center;">備品がありません</td>
+                        </tr>
+                    `;
+                } else {
+                    items.forEach(item => {
+                        html += `
+                            <tr>
+                                <td>${item.id}</td>
+                                <td>${item.name}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                itemsList.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                itemsList.innerHTML = `
+                    <tr>
+                        <td colspan="2" style="text-align: center; color: red;">
+                            備品データの取得に失敗しました
+                        </td>
+                    </tr>
                 `;
             });
-            itemsTableBody.innerHTML = html;
-        })
-        .catch(error => {
-            console.error('備品リストの取得に失敗しました。', error);
-        });
     }
     
     // 利用者を追加する関数
     function addUser() {
-        const name = document.getElementById('new-user-name').value;
+        const userName = document.getElementById('user-name').value;
         
-        if (!name) {
-            alert('利用者名を入力してください。');
+        if (!userName) {
+            alert('利用者名を入力してください');
             return;
         }
         
-        // APIリクエスト
-        fetch('/api/users', {
+        fetch(`${baseURL}/api/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name: name })
+            body: JSON.stringify({ name: userName })
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || '利用者の追加に失敗しました。');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            // モーダルを閉じる
-            addUserModal.style.display = 'none';
-            
-            // フォームをリセット
-            document.getElementById('new-user-name').value = '';
-            
-            // 利用者リストを更新
-            fetchUsers();
-            
-            alert('利用者を追加しました。');
-        })
-        .catch(error => {
-            alert(error.message);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                document.getElementById('user-name').value = '';
+                fetchUsers();
+                alert('利用者を追加しました');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('利用者の追加に失敗しました');
+            });
     }
     
     // 備品を追加する関数
     function addItem() {
-        const name = document.getElementById('new-item-name').value;
+        const itemName = document.getElementById('item-name').value;
         
-        if (!name) {
-            alert('備品名を入力してください。');
+        if (!itemName) {
+            alert('備品名を入力してください');
             return;
         }
         
-        // APIリクエスト
-        fetch('/api/items', {
+        fetch(`${baseURL}/api/items`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name: name })
+            body: JSON.stringify({ name: itemName })
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || '備品の追加に失敗しました。');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            // モーダルを閉じる
-            addItemModal.style.display = 'none';
-            
-            // フォームをリセット
-            document.getElementById('new-item-name').value = '';
-            
-            // 備品リストを更新
-            fetchItems();
-            
-            alert('備品を追加しました。');
-        })
-        .catch(error => {
-            alert(error.message);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                document.getElementById('item-name').value = '';
+                fetchItems();
+                alert('備品を追加しました');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('備品の追加に失敗しました');
+            });
     }
     
     // 全予約を削除する関数
     function deleteAllReservations() {
-        // APIリクエスト
-        fetch('/api/reservations/all', {
+        if (!confirm('全ての予約を削除してもよろしいですか？この操作は取り消せません。')) {
+            return;
+        }
+        
+        fetch(`${baseURL}/api/reservations/all`, {
             method: 'DELETE'
         })
-        .then(response => response.json())
-        .then(data => {
-            // モーダルを閉じる
-            confirmDeleteAllModal.style.display = 'none';
-            
-            alert(data.message);
-        })
-        .catch(error => {
-            alert('予約の削除に失敗しました。');
-            console.error(error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message || '全ての予約を削除しました');
+                } else {
+                    alert(data.error || '予約の削除に失敗しました');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('予約の削除に失敗しました');
+            });
     }
 }); 

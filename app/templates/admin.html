@@ -10,6 +10,9 @@
 </head>
 <body>
     <header>
+        <button id="sidebar-toggle" class="sidebar-toggle d-md-none">
+            <i class="fas fa-bars"></i>
+        </button>
         <div class="logo">R</div>
         <h1>備品貸出予約管理システム</h1>
         <nav>
@@ -20,7 +23,7 @@
         </nav>
     </header>
 
-    <div class="app-layout">
+    <div class="app-layout compact">
         <div class="sidebar">
             <div class="sidebar-section">
                 <h3>管理メニュー</h3>
@@ -32,100 +35,64 @@
             </div>
         </div>
 
-        <div class="main-content">
-            <div class="container admin-container">
-                <h2>管理者機能</h2>
-                
-                <div class="admin-section" id="users-section">
-                    <h3>利用者管理</h3>
-                    <div class="admin-table-container">
-                        <table class="admin-table" id="users-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>利用者名</th>
-                                </tr>
-                            </thead>
-                            <tbody id="users-body">
-                                <!-- 利用者データがここに入ります -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="admin-actions">
-                        <button id="add-user-admin-btn" class="btn primary-btn">新規利用者追加</button>
-                    </div>
-                </div>
-                
-                <div class="admin-section" id="items-section">
-                    <h3>備品管理</h3>
-                    <div class="admin-table-container">
-                        <table class="admin-table" id="items-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>備品名</th>
-                                </tr>
-                            </thead>
-                            <tbody id="items-body">
-                                <!-- 備品データがここに入ります -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="admin-actions">
-                        <button id="add-item-admin-btn" class="btn primary-btn">新規備品追加</button>
-                    </div>
-                </div>
-                
-                <div class="admin-section danger-zone" id="danger-section">
-                    <h3>危険な操作</h3>
-                    <div class="admin-actions">
-                        <button id="delete-all-reservations-btn" class="btn danger-btn">全予約データを削除</button>
-                    </div>
-                    <p class="warning-text">※この操作は取り消せません。全ての予約データが削除されます。</p>
-                </div>
-            </div>
-        </div>
-    </div>
+        <div class="main-content admin-container">
+            <h2>管理者機能</h2>
 
-    <!-- モーダル -->
-    <div class="modal" id="add-user-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>新しい利用者を追加</h2>
-            <form id="add-user-form">
-                <div class="form-group">
-                    <label for="new-user-name">利用者名:</label>
-                    <input type="text" id="new-user-name" required>
+            <section id="users-section" class="admin-section">
+                <h3>利用者管理</h3>
+                <div class="admin-table-container">
+                    <table class="admin-table" id="users-list">
+                        <tr>
+                            <th>ID</th>
+                            <th>利用者名</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center;">読み込み中...</td>
+                        </tr>
+                    </table>
                 </div>
-                <button type="submit" class="btn primary-btn">追加</button>
-            </form>
-        </div>
-    </div>
+                <form id="add-user-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="user-name">新しい利用者名:</label>
+                        <div class="input-with-button">
+                            <input type="text" id="user-name" required>
+                            <button type="submit" class="btn primary-btn">追加</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
 
-    <div class="modal" id="add-item-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>新しい備品を追加</h2>
-            <form id="add-item-form">
-                <div class="form-group">
-                    <label for="new-item-name">備品名:</label>
-                    <input type="text" id="new-item-name" required>
+            <section id="items-section" class="admin-section">
+                <h3>備品管理</h3>
+                <div class="admin-table-container">
+                    <table class="admin-table" id="items-list">
+                        <tr>
+                            <th>ID</th>
+                            <th>備品名</th>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center;">読み込み中...</td>
+                        </tr>
+                    </table>
                 </div>
-                <button type="submit" class="btn primary-btn">追加</button>
-            </form>
-        </div>
-    </div>
+                <form id="add-item-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="item-name">新しい備品名:</label>
+                        <div class="input-with-button">
+                            <input type="text" id="item-name" required>
+                            <button type="submit" class="btn primary-btn">追加</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
 
-    <div class="modal" id="confirm-delete-all-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>全予約削除の確認</h2>
-            <p>全ての予約データを削除します。この操作は取り消せません。</p>
-            <p>本当に削除してもよろしいですか？</p>
-            <div class="modal-actions">
-                <button id="confirm-delete-all-btn" class="btn danger-btn">全て削除</button>
-                <button id="cancel-delete-all-btn" class="btn secondary-btn">キャンセル</button>
-            </div>
+            <section id="danger-section" class="admin-section danger-zone">
+                <h3>危険な操作</h3>
+                <p class="warning-text">⚠️ この操作は取り消せません。全ての予約データが削除されます。</p>
+                <div class="admin-actions">
+                    <button id="delete-all-btn" class="btn danger-btn">全予約データを削除</button>
+                </div>
+            </section>
         </div>
     </div>
 
