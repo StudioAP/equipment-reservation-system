@@ -222,36 +222,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     confirmDeleteBtn.addEventListener('click', function() {
-        const reservationId = this.getAttribute('data-id');
-        
-        fetch(`/api/reservations/${reservationId}`, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // モーダルを閉じる
-                confirmDeleteModal.style.display = 'none';
-                
-                // 削除成功メッセージを表示
-                showMessage(data.message || '予約が削除されました', 'success');
-                
-                // 選択中の日付の予約を再取得して表示更新
-                if (selectedDate) {
-                    const dateStr = formatDate(selectedDate);
-                    fetchReservationsForDate(dateStr);
-                    
-                    // カレンダー上の予約表示も更新
-                    updateCalendarDisplay(dateStr);
-                }
-            } else {
-                showMessage(data.message || '予約の削除に失敗しました', 'error');
-            }
-        })
-        .catch(error => {
-            showMessage('予約の削除に失敗しました。', 'error');
-            console.error(error);
-        });
+        if (reservationToDelete) {
+            deleteReservation(reservationToDelete);
+        }
     });
     
     cancelDeleteBtn.addEventListener('click', function() {
@@ -691,7 +664,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // カレンダーの日をクリックした時のイベントハンドラ
     function handleDayClick(e, date) {
         e.stopPropagation();
-        selectDate(formatDate(date));
+        
+        // 以前に選択された日付のハイライトを削除
+        const previouslySelected = document.querySelectorAll('.calendar-day.selected');
+        previouslySelected.forEach(day => day.classList.remove('selected'));
+        
+        // クリックされた日付をハイライト
+        const dayElement = e.currentTarget;
+        dayElement.classList.add('selected');
+        
+        // 選択された日付を更新
+        selectedDate = date;
+        
+        // 選択された日付を表示
+        document.getElementById('selected-date').value = formatDateJP(new Date(date));
+        
+        // 予約の詳細を表示
+        updateSchedule(date);
+        
+        // 予約フォームを表示 - 直感的なフロー改善のため、クリック時にすぐフォームを表示
+        showReservationForm();
+        
+        // スケジュールコンテナを非表示
+        document.getElementById('schedule-container').style.display = 'none';
     }
     
     // スケジュール表示を更新する関数
@@ -753,24 +748,35 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 予約フォームを表示する関数
     function showReservationForm() {
-        // フォームをリセット
-        createReservationForm.reset();
+        const formContainer = document.getElementById('reservation-form');
+        const scheduleContainer = document.getElementById('schedule-container');
         
-        // 選択された日付がある場合は設定
-        if (selectedDate) {
-            selectedDateInput.value = formatDateJP(selectedDate);
-        } else {
-            // 日付が選択されていない場合は今日の日付を設定
-            const todayStr = formatDate(today);
-            selectDate(todayStr);
-            selectedDateInput.value = formatDateJP(today);
+        // フォームを表示
+        formContainer.style.display = 'block';
+        scheduleContainer.style.display = 'none';
+        
+        // 選択された日付がない場合は今日の日付を使用
+        if (!selectedDate) {
+            const today = new Date();
+            selectedDate = formatDate(today);
+            document.getElementById('selected-date').value = formatDateJP(today);
+            
+            // カレンダーで今日の日付をハイライト
+            const todayElement = document.querySelector('.calendar-day.today');
+            if (todayElement) {
+                todayElement.classList.add('selected');
+            }
         }
         
-        // スケジュール表示を非表示にし、予約フォームを表示
-        scheduleContainerEl.style.display = 'none';
-        reservationListView.style.display = 'none'; // 予約リストも非表示
-        calendarView.style.display = 'block'; // カレンダービューを表示
-        reservationFormEl.style.display = 'block';
+        // 時間枠のチェックボックスをリセット
+        document.querySelectorAll('.time-slot-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // フォームにフォーカス
+        if (document.getElementById('user-select')) {
+            document.getElementById('user-select').focus();
+        }
     }
     
     // 予約フォームを非表示にする関数
@@ -1273,4 +1279,88 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初期表示時は予約フォームを非表示にする
     reservationFormEl.style.display = 'none';
     scheduleContainerEl.style.display = 'block';
-}); 
+    
+    // モバイル対応のナビゲーション設定
+    setupMobileNavigation();
+    
+    // 予約削除イベントのハンドラを更新
+    document.getElementById('confirm-delete-btn').addEventListener('click', function() {
+        if (reservationToDelete) {
+            deleteReservation(reservationToDelete);
+        }
+    });
+});
+
+// 予約削除後の更新問題の修正
+function deleteReservation(id) {
+    fetch(`/api/reservations/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('削除に失敗しました');
+        return response.json();
+    })
+    .then(data => {
+        // 成功メッセージを表示
+        showMessage('予約を削除しました', 'success');
+        
+        // 予約スケジュールを更新
+        if (selectedDate) {
+            fetchReservationsForDate(selectedDate);
+        }
+        
+        // カレンダーを更新 - ここが足りていなかった
+        fetchReservationsForMonth(currentYear, currentMonth + 1);
+        
+        // モーダルを閉じる
+        const modal = document.getElementById('confirm-delete-modal');
+        modal.style.display = 'none';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('削除に失敗しました: ' + error.message, 'error');
+    });
+}
+
+// モバイル対応のサイドバー制御
+function setupMobileNavigation() {
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            
+            // オーバーレイの作成
+            let overlay = document.querySelector('.sidebar-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                document.body.appendChild(overlay);
+                
+                // オーバーレイをクリックしたらサイドバーを閉じる
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (sidebar.classList.contains('active')) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        });
+    }
+    
+    // 画面サイズの変更を監視
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('active');
+            const overlay = document.querySelector('.sidebar-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+        }
+    });
+} 

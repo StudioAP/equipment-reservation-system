@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <button id="sidebar-toggle" class="sidebar-toggle d-md-none">
+        <button id="sidebar-toggle" class="sidebar-toggle">
             <i class="fas fa-bars"></i>
         </button>
         <div class="logo">R</div>
@@ -23,7 +23,7 @@
         </nav>
     </header>
 
-    <div class="app-layout compact">
+    <div class="app-layout">
         <div class="sidebar">
             <div class="sidebar-header">
                 <button class="create-btn" id="create-reservation-btn">
@@ -34,8 +34,8 @@
             <div class="sidebar-section">
                 <h3>マイカレンダー</h3>
                 <ul class="sidebar-list">
-                    <li><a href="#" class="active"><i class="fas fa-calendar"></i> 予約カレンダー</a></li>
-                    <li><a href="#"><i class="fas fa-list"></i> 予約リスト</a></li>
+                    <li><a href="#" class="active" id="show-calendar-view"><i class="fas fa-calendar"></i> 予約カレンダー</a></li>
+                    <li><a href="#" id="show-list-view"><i class="fas fa-list"></i> 予約リスト</a></li>
                 </ul>
             </div>
             
@@ -45,9 +45,20 @@
                     <!-- 備品カテゴリがここに入ります -->
                 </ul>
             </div>
+            
+            <div class="sidebar-footer">
+                <a href="#" id="show-guidance"><i class="fas fa-question-circle"></i> 使い方ガイド</a>
+            </div>
         </div>
 
         <div class="main-content">
+            <div class="filter-status-bar" id="filter-status-bar">
+                <div id="filter-status" class="filter-status"></div>
+                <button id="reset-filter" class="reset-filter-btn" style="display:none;">
+                    <i class="fas fa-times"></i> フィルタをリセット
+                </button>
+            </div>
+            
             <div class="flex-container">
                 <div class="calendar-section">
                     <div class="calendar-header">
@@ -61,8 +72,6 @@
                         </div>
                     </div>
                     
-                    <div id="filter-status" class="filter-status"></div>
-
                     <div class="calendar-grid-header">
                         <div class="day-header">日</div>
                         <div class="day-header">月</div>
@@ -95,7 +104,7 @@
                                         <select id="user-select" required>
                                             <option value="">選択してください</option>
                                         </select>
-                                        <button type="button" id="add-user-btn" class="small-btn"><i class="fas fa-plus"></i></button>
+                                        <button type="button" id="add-user-btn" class="small-btn" title="新しい利用者を追加"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>
                                 
@@ -105,7 +114,7 @@
                                         <select id="item-select" required>
                                             <option value="">選択してください</option>
                                         </select>
-                                        <button type="button" id="add-item-btn" class="small-btn"><i class="fas fa-plus"></i></button>
+                                        <button type="button" id="add-item-btn" class="small-btn" title="新しい備品を追加"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -150,6 +159,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-help-text">連続した時間枠を選択してください</div>
                             </div>
                             
                             <div class="form-actions">
@@ -232,31 +242,48 @@
 
     <!-- ガイダンスモーダル -->
     <div class="modal" id="guidance-modal">
-        <div class="modal-content">
+        <div class="modal-content guidance-content">
             <span class="close">&times;</span>
-            <h2>ようこそ！備品貸出予約管理システムへ</h2>
+            <h2>備品貸出予約管理システムの使い方</h2>
             <div class="guidance-steps">
                 <div class="guidance-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>予約したい日付を選択</h3>
-                        <p>カレンダーから予約したい日付をクリックします。選択した日付は色で強調表示されます。</p>
+                        <h3>日付を選択</h3>
+                        <p>カレンダーから予約したい日付をクリックします。</p>
+                        <div class="guidance-image">
+                            <i class="fas fa-calendar-day fa-3x"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="guidance-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
                         <h3>予約情報を入力</h3>
-                        <p>表示されるフォームで利用者、備品、利用時間を選択します。必要に応じて新しい利用者や備品を追加できます。</p>
+                        <p>利用者、備品、時間枠を選択します。</p>
+                        <div class="guidance-image">
+                            <i class="fas fa-edit fa-3x"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="guidance-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h3>予約を確定</h3>
-                        <p>「予約する」ボタンをクリックして予約を確定します。予約はカレンダーに表示されます。</p>
+                        <p>「予約する」ボタンをクリックして完了です。</p>
+                        <div class="guidance-image">
+                            <i class="fas fa-check-circle fa-3x"></i>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="guidance-tips">
+                <h3>便利な機能</h3>
+                <ul>
+                    <li><i class="fas fa-filter"></i> 備品カテゴリでフィルタリングが可能です</li>
+                    <li><i class="fas fa-list"></i> 予約リスト表示で全ての予約を確認できます</li>
+                    <li><i class="fas fa-mobile-alt"></i> スマートフォンでも快適に操作できます</li>
+                </ul>
             </div>
             <div class="guidance-actions">
                 <label>
@@ -266,6 +293,8 @@
             </div>
         </div>
     </div>
+
+    <div class="sidebar-overlay"></div>
 
     <footer>
         <p>&copy; 2023 備品貸出予約管理システム</p>

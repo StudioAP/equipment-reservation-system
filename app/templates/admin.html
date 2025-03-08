@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理者ページ - 備品貸出予約管理システム</title>
+    <title>備品貸出予約管理システム - 管理者ページ</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <button id="sidebar-toggle" class="sidebar-toggle d-md-none">
+        <button id="sidebar-toggle" class="sidebar-toggle">
             <i class="fas fa-bars"></i>
         </button>
         <div class="logo">R</div>
-        <h1>備品貸出予約管理システム</h1>
+        <h1>備品貸出予約管理システム - 管理者ページ</h1>
         <nav>
             <ul>
                 <li><a href="/">予約カレンダー</a></li>
@@ -23,76 +23,115 @@
         </nav>
     </header>
 
-    <div class="app-layout compact">
+    <div class="app-layout">
         <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>管理メニュー</h2>
+            </div>
+            
             <div class="sidebar-section">
-                <h3>管理メニュー</h3>
+                <h3>ユーザー管理</h3>
                 <ul class="sidebar-list">
-                    <li><a href="#users-section" class="active"><i class="fas fa-users"></i> 利用者管理</a></li>
-                    <li><a href="#items-section"><i class="fas fa-box"></i> 備品管理</a></li>
-                    <li><a href="#danger-section"><i class="fas fa-exclamation-triangle"></i> データ管理</a></li>
+                    <li><a href="#users-section" class="active" id="show-users"><i class="fas fa-users"></i> ユーザー一覧</a></li>
+                    <li><a href="#add-user-section" id="show-add-user"><i class="fas fa-user-plus"></i> ユーザー追加</a></li>
                 </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>備品管理</h3>
+                <ul class="sidebar-list">
+                    <li><a href="#items-section" id="show-items"><i class="fas fa-box"></i> 備品一覧</a></li>
+                    <li><a href="#add-item-section" id="show-add-item"><i class="fas fa-plus-circle"></i> 備品追加</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <a href="/" class="return-link"><i class="fas fa-arrow-left"></i> カレンダーに戻る</a>
             </div>
         </div>
 
-        <div class="main-content admin-container">
-            <h2>管理者機能</h2>
-
-            <section id="users-section" class="admin-section">
-                <h3>利用者管理</h3>
-                <div class="admin-table-container">
-                    <table class="admin-table" id="users-list">
-                        <tr>
-                            <th>ID</th>
-                            <th>利用者名</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: center;">読み込み中...</td>
-                        </tr>
-                    </table>
-                </div>
-                <form id="add-user-form" class="admin-form">
-                    <div class="form-group">
-                        <label for="user-name">新しい利用者名:</label>
-                        <div class="input-with-button">
-                            <input type="text" id="user-name" required>
-                            <button type="submit" class="btn primary-btn">追加</button>
-                        </div>
+        <div class="main-content">
+            <div class="admin-container">
+                <section id="users-section" class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> ユーザー一覧</h2>
                     </div>
-                </form>
-            </section>
-
-            <section id="items-section" class="admin-section">
-                <h3>備品管理</h3>
-                <div class="admin-table-container">
-                    <table class="admin-table" id="items-list">
-                        <tr>
-                            <th>ID</th>
-                            <th>備品名</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: center;">読み込み中...</td>
-                        </tr>
-                    </table>
-                </div>
-                <form id="add-item-form" class="admin-form">
-                    <div class="form-group">
-                        <label for="item-name">新しい備品名:</label>
-                        <div class="input-with-button">
-                            <input type="text" id="item-name" required>
-                            <button type="submit" class="btn primary-btn">追加</button>
-                        </div>
+                    <div class="table-container">
+                        <table class="admin-table" id="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>名前</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-body">
+                                <!-- ユーザーデータがここに入ります -->
+                            </tbody>
+                        </table>
                     </div>
-                </form>
-            </section>
+                </section>
 
-            <section id="danger-section" class="admin-section danger-zone">
-                <h3>危険な操作</h3>
-                <p class="warning-text">⚠️ この操作は取り消せません。全ての予約データが削除されます。</p>
-                <div class="admin-actions">
-                    <button id="delete-all-btn" class="btn danger-btn">全予約データを削除</button>
-                </div>
-            </section>
+                <section id="add-user-section" class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-user-plus"></i> ユーザー追加</h2>
+                    </div>
+                    <form id="admin-add-user-form" class="admin-form">
+                        <div class="form-group">
+                            <label for="admin-user-name">ユーザー名:</label>
+                            <input type="text" id="admin-user-name" name="name" required>
+                        </div>
+                        <button type="submit" class="btn primary-btn">追加</button>
+                    </form>
+                </section>
+
+                <section id="items-section" class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-box"></i> 備品一覧</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table" id="items-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>名前</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="items-body">
+                                <!-- 備品データがここに入ります -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="add-item-section" class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-plus-circle"></i> 備品追加</h2>
+                    </div>
+                    <form id="admin-add-item-form" class="admin-form">
+                        <div class="form-group">
+                            <label for="admin-item-name">備品名:</label>
+                            <input type="text" id="admin-item-name" name="name" required>
+                        </div>
+                        <button type="submit" class="btn primary-btn">追加</button>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay"></div>
+
+    <div class="modal" id="confirm-delete-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>削除の確認</h2>
+            <p id="delete-confirmation-message">このアイテムを削除してもよろしいですか？</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn" class="btn danger-btn" data-type="" data-id="">削除</button>
+                <button id="cancel-delete-btn" class="btn secondary-btn">キャンセル</button>
+            </div>
         </div>
     </div>
 
@@ -100,6 +139,339 @@
         <p>&copy; 2023 備品貸出予約管理システム</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // サイドバートグル機能
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                if (sidebar.classList.contains('active')) {
+                    overlay.classList.add('active');
+                } else {
+                    overlay.classList.remove('active');
+                }
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // 画面サイズの変更を監視
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // 管理機能の実装
+            const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            const closeModalBtn = confirmDeleteModal.querySelector('.close');
+            
+            // ユーザー一覧の取得
+            fetchUsers();
+            
+            // 備品一覧の取得
+            fetchItems();
+            
+            // ユーザー追加フォームの送信ハンドラ
+            document.getElementById('admin-add-user-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const userName = document.getElementById('admin-user-name').value.trim();
+                if (userName) {
+                    addUser(userName);
+                }
+            });
+            
+            // 備品追加フォームの送信ハンドラ
+            document.getElementById('admin-add-item-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = document.getElementById('admin-item-name').value.trim();
+                if (itemName) {
+                    addItem(itemName);
+                }
+            });
+            
+            // 削除キャンセルハンドラ
+            cancelDeleteBtn.addEventListener('click', function() {
+                confirmDeleteModal.style.display = 'none';
+            });
+            
+            closeModalBtn.addEventListener('click', function() {
+                confirmDeleteModal.style.display = 'none';
+            });
+            
+            // 削除確認ハンドラ
+            confirmDeleteBtn.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                const id = this.getAttribute('data-id');
+                
+                if (type === 'user') {
+                    deleteUser(id);
+                } else if (type === 'item') {
+                    deleteItem(id);
+                }
+                
+                confirmDeleteModal.style.display = 'none';
+            });
+            
+            // サイドバーのナビゲーション処理
+            document.querySelectorAll('.sidebar-list a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 全てのナビリンクから active クラスを削除
+                    document.querySelectorAll('.sidebar-list a').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    
+                    // クリックされたリンクに active クラスを追加
+                    this.classList.add('active');
+                    
+                    // 全てのセクションを非表示
+                    document.querySelectorAll('.admin-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // 対応するセクションを表示
+                    const targetId = this.getAttribute('href').substring(1);
+                    document.getElementById(targetId).style.display = 'block';
+                    
+                    // モバイル表示の場合、サイドバーを閉じる
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 初期表示設定
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById('users-section').style.display = 'block';
+        });
+        
+        // ユーザー一覧を取得する関数
+        function fetchUsers() {
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(data => {
+                    const usersBody = document.getElementById('users-body');
+                    usersBody.innerHTML = '';
+                    
+                    data.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>
+                                <button class="delete-user-btn btn danger-btn" data-id="${user.id}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        `;
+                        usersBody.appendChild(row);
+                    });
+                    
+                    // 削除ボタンのイベントハンドラを追加
+                    document.querySelectorAll('.delete-user-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const userId = this.getAttribute('data-id');
+                            showDeleteConfirmation('user', userId, '本当にこのユーザーを削除しますか？');
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    showMessage('ユーザー情報の取得に失敗しました。', 'error');
+                });
+        }
+        
+        // 備品一覧を取得する関数
+        function fetchItems() {
+            fetch('/api/items')
+                .then(response => response.json())
+                .then(data => {
+                    const itemsBody = document.getElementById('items-body');
+                    itemsBody.innerHTML = '';
+                    
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td>${item.name}</td>
+                            <td>
+                                <button class="delete-item-btn btn danger-btn" data-id="${item.id}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        `;
+                        itemsBody.appendChild(row);
+                    });
+                    
+                    // 削除ボタンのイベントハンドラを追加
+                    document.querySelectorAll('.delete-item-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const itemId = this.getAttribute('data-id');
+                            showDeleteConfirmation('item', itemId, '本当にこの備品を削除しますか？');
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching items:', error);
+                    showMessage('備品情報の取得に失敗しました。', 'error');
+                });
+        }
+        
+        // ユーザーを追加する関数
+        function addUser(name) {
+            fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('ユーザーを追加しました。', 'success');
+                    document.getElementById('admin-user-name').value = '';
+                    fetchUsers(); // ユーザー一覧を更新
+                } else {
+                    showMessage(data.message || 'ユーザーの追加に失敗しました。', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding user:', error);
+                showMessage('ユーザーの追加に失敗しました。', 'error');
+            });
+        }
+        
+        // 備品を追加する関数
+        function addItem(name) {
+            fetch('/api/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('備品を追加しました。', 'success');
+                    document.getElementById('admin-item-name').value = '';
+                    fetchItems(); // 備品一覧を更新
+                } else {
+                    showMessage(data.message || '備品の追加に失敗しました。', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding item:', error);
+                showMessage('備品の追加に失敗しました。', 'error');
+            });
+        }
+        
+        // ユーザーを削除する関数
+        function deleteUser(id) {
+            fetch(`/api/users/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('ユーザーを削除しました。', 'success');
+                    fetchUsers(); // ユーザー一覧を更新
+                } else {
+                    showMessage(data.message || 'ユーザーの削除に失敗しました。', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+                showMessage('ユーザーの削除に失敗しました。', 'error');
+            });
+        }
+        
+        // 備品を削除する関数
+        function deleteItem(id) {
+            fetch(`/api/items/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('備品を削除しました。', 'success');
+                    fetchItems(); // 備品一覧を更新
+                } else {
+                    showMessage(data.message || '備品の削除に失敗しました。', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting item:', error);
+                showMessage('備品の削除に失敗しました。', 'error');
+            });
+        }
+        
+        // 削除確認モーダルを表示する関数
+        function showDeleteConfirmation(type, id, message) {
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const deleteConfirmationMessage = document.getElementById('delete-confirmation-message');
+            
+            confirmDeleteBtn.setAttribute('data-type', type);
+            confirmDeleteBtn.setAttribute('data-id', id);
+            deleteConfirmationMessage.textContent = message;
+            
+            document.getElementById('confirm-delete-modal').style.display = 'block';
+        }
+        
+        // メッセージを表示する関数
+        function showMessage(message, type = 'info') {
+            // メッセージコンテナがあれば取得、なければ作成
+            let messageContainer = document.querySelector('.message-container');
+            
+            if (!messageContainer) {
+                messageContainer = document.createElement('div');
+                messageContainer.className = `message-container ${type}`;
+                document.body.appendChild(messageContainer);
+            } else {
+                messageContainer.className = `message-container ${type}`;
+            }
+            
+            // メッセージ内容を設定
+            messageContainer.innerHTML = `
+                <div class="message-text">${message}</div>
+                <button class="message-close">&times;</button>
+            `;
+            
+            // 閉じるボタンのイベントハンドラを設定
+            const closeBtn = messageContainer.querySelector('.message-close');
+            closeBtn.addEventListener('click', function() {
+                messageContainer.classList.add('closing');
+                setTimeout(() => {
+                    messageContainer.remove();
+                }, 300);
+            });
+            
+            // 自動的に閉じる
+            setTimeout(() => {
+                if (messageContainer.parentNode) {
+                    messageContainer.classList.add('closing');
+                    setTimeout(() => {
+                        if (messageContainer.parentNode) {
+                            messageContainer.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+    </script>
 </body>
 </html> 
