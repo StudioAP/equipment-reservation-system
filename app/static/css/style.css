@@ -267,7 +267,11 @@ nav ul li a.active {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    border-bottom: 1px solid #e0e0e0;
+    grid-auto-rows: minmax(70px, auto);
+    gap: 2px;
+    margin-top: 10px;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 .calendar-grid-header {
@@ -285,11 +289,12 @@ nav ul li a.active {
 }
 
 .calendar-day {
-    border-right: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-    min-height: 120px;
-    padding: 0.3rem;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    min-height: 70px;
+    padding: 5px;
     position: relative;
+    overflow: hidden;
 }
 
 .calendar-day:nth-child(7n) {
@@ -297,11 +302,16 @@ nav ul li a.active {
 }
 
 .day-number {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    color: #333;
-    text-align: right;
-    padding: 0.2rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    position: relative;
 }
 
 .today .day-number {
@@ -827,7 +837,7 @@ footer {
 .day-reservation {
     padding: 2px 4px;
     margin: 1px 0;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     background-color: rgba(74, 144, 226, 0.2);
     border-left: 3px solid #4a90e2;
     border-radius: 2px;
@@ -836,6 +846,7 @@ footer {
     text-overflow: ellipsis;
     cursor: pointer;
     transition: background-color 0.2s;
+    max-width: 100%;
 }
 
 .day-reservation:hover {
@@ -892,7 +903,7 @@ footer {
 /* 予約リストビュー */
 .reservation-list-view {
     padding: 20px;
-    margin-top: 20px;
+    overflow-x: auto;
 }
 
 .reservation-list-view h2 {
@@ -1030,11 +1041,13 @@ footer {
 .calendar-day.selected {
     background-color: rgba(74, 144, 226, 0.2);
     border: 2px solid #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
 }
 
 .calendar-day.selected .day-number {
     color: #1976d2;
     font-weight: bold;
+    background-color: rgba(74, 144, 226, 0.2);
 }
 
 /* コンパクトレイアウト */
@@ -1058,7 +1071,9 @@ footer {
 .details-section {
     flex: 1;
     min-width: 0;
-    max-width: 500px;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* カレンダーサイズの最適化 */
@@ -1159,8 +1174,8 @@ header h1 {
         max-width: 100%;
     }
     
-    .sidebar {
-        width: 220px;
+    .calendar-section {
+        margin-bottom: 20px;
     }
 }
 
@@ -1268,4 +1283,38 @@ header h1 {
 
 .admin-form button {
     padding: 8px 15px;
+}
+
+/* 予約が多い場合の表示制御 */
+.day-reservations {
+    max-height: 60px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+
+.day-reservations::-webkit-scrollbar {
+    width: 4px;
+}
+
+.day-reservations::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+/* 予約フォームのヘルプテキスト */
+.form-help {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+/* 詳細セクションのレイアウト */
+.reservation-form-container, 
+.schedule-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
 } 

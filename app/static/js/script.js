@@ -193,6 +193,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     cancelBtn.addEventListener('click', function() {
         hideReservationForm();
+        // スケジュール表示を表示
+        scheduleContainerEl.style.display = 'block';
     });
     
     createReservationForm.addEventListener('submit', function(e) {
@@ -615,22 +617,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 dayEl.classList.add('today');
             }
             
-            // 選択された日付かどうか
-            if (selectedDate && currentDate.toDateString() === selectedDate.toDateString()) {
-                dayEl.classList.add('selected');
-            }
+            // 日付がクリックされた時のイベントリスナー
+            dayEl.addEventListener('click', (e) => handleDayClick(e, currentDate));
             
             dayEl.innerHTML = `
                 <div class="day-number">${date}</div>
                 <div class="day-content" data-date="${dateStr}"></div>
+                <div class="day-reservations"></div>
             `;
             
-            // 日付クリックイベントの設定
-            dayEl.addEventListener('click', function() {
-                selectDate(dateStr);
-            });
-            
             calendarGridEl.appendChild(dayEl);
+            
+            // 日付の予約を取得
+            fetchReservationsForCalendar(dateStr, dayEl);
+            
             date++;
         }
         
@@ -676,13 +676,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // スケジュール表示を更新
-        scheduleContainerEl.style.display = 'block';
-        reservationFormEl.style.display = 'none';
-        scheduleDateEl.textContent = formatDateJP(date);
+        // 日付選択後に予約フォームを直接表示
+        // 選択した日付をフォームにセット
+        selectedDateInput.value = formatDateJP(date);
         
-        // その日の予約スケジュールを取得して表示
+        // カレンダー表示の横にフォームを表示
+        scheduleContainerEl.style.display = 'none';
+        reservationFormEl.style.display = 'block';
+        
+        // すでに予約がある場合は表示して参照できるようにする
         fetchReservationsForDate(dateStr);
+    }
+    
+    // カレンダーの日をクリックした時のイベントハンドラ
+    function handleDayClick(e, date) {
+        e.stopPropagation();
+        selectDate(formatDate(date));
     }
     
     // スケジュール表示を更新する関数
@@ -767,6 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 予約フォームを非表示にする関数
     function hideReservationForm() {
         reservationFormEl.style.display = 'none';
+        scheduleContainerEl.style.display = 'block';
     }
     
     // 予約を作成する関数
@@ -848,9 +858,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // カレンダーの表示も更新
             updateCalendarDisplay(dateStr);
             
+            // 予約フォームをリセット
+            createReservationForm.reset();
+            
             // 予約フォームを非表示にし、スケジュール表示を表示
             hideReservationForm();
-            scheduleContainerEl.style.display = 'block';
         })
         .catch(error => {
             console.error('Reservation creation error:', error);
@@ -1257,4 +1269,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 5000);
     }
+    
+    // 初期表示時は予約フォームを非表示にする
+    reservationFormEl.style.display = 'none';
+    scheduleContainerEl.style.display = 'block';
 }); 

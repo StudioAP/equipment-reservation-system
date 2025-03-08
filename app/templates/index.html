@@ -60,6 +60,8 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div id="filter-status" class="filter-status"></div>
 
                     <div class="calendar-grid-header">
                         <div class="day-header">日</div>
@@ -76,31 +78,10 @@
                     </div>
                 </div>
                 
-                <div class="details-section">
-                    <div class="schedule-container" id="schedule-container">
-                        <h2>予約スケジュール</h2>
-                        <div class="schedule-date" id="schedule-date">2023年1月1日</div>
-                        <div class="schedule-table-container">
-                            <table class="schedule-table" id="schedule-table">
-                                <thead>
-                                    <tr>
-                                        <th>時間帯</th>
-                                        <th>備品</th>
-                                        <th>利用者</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="schedule-body">
-                                    <!-- スケジュールデータがここに入ります -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="no-reservations" class="no-data">予約はありません</div>
-                        <button id="add-reservation-btn" class="btn primary-btn">新規予約</button>
-                    </div>
-
+                <div class="details-section" id="details-section">
                     <div class="reservation-form-container" id="reservation-form">
                         <h2>予約フォーム</h2>
+                        <p class="form-help">予約の詳細を入力してください</p>
                         <form id="create-reservation-form">
                             <div class="form-group">
                                 <label for="selected-date">選択日:</label>
@@ -177,6 +158,28 @@
                             </div>
                         </form>
                     </div>
+
+                    <div class="schedule-container" id="schedule-container">
+                        <h2>予約スケジュール</h2>
+                        <div class="schedule-date" id="schedule-date">2023年1月1日</div>
+                        <div class="schedule-table-container">
+                            <table class="schedule-table" id="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>時間帯</th>
+                                        <th>備品</th>
+                                        <th>利用者</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule-body">
+                                    <!-- スケジュールデータがここに入ります -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="no-reservations" class="no-data">予約はありません</div>
+                        <button id="add-reservation-btn" class="btn primary-btn">新規予約</button>
+                    </div>
                 </div>
             </div>
             
@@ -243,22 +246,15 @@
                 <div class="guidance-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>「新規予約」ボタンをクリック</h3>
-                        <p>左サイドバーまたは日付詳細の下部にある「新規予約」ボタンをクリックして予約フォームを開きます。</p>
+                        <h3>予約情報を入力</h3>
+                        <p>表示されるフォームで利用者、備品、利用時間を選択します。必要に応じて新しい利用者や備品を追加できます。</p>
                     </div>
                 </div>
                 <div class="guidance-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>予約情報を入力</h3>
-                        <p>利用者、備品、利用時間を選択します。必要に応じて新しい利用者や備品を追加できます。</p>
-                    </div>
-                </div>
-                <div class="guidance-step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
                         <h3>予約を確定</h3>
-                        <p>「予約する」ボタンをクリックして予約を確定します。予約はカレンダーと日付詳細に表示されます。</p>
+                        <p>「予約する」ボタンをクリックして予約を確定します。予約はカレンダーに表示されます。</p>
                     </div>
                 </div>
             </div>
