@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>備品貸出予約管理システム</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <button id="sidebar-toggle" class="sidebar-toggle d-md-none">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">R</div>
+        <h1>備品貸出予約管理システム</h1>
+        <nav>
+            <ul>
+                <li><a href="/" class="active">予約カレンダー</a></li>
+                <li><a href="/admin">管理者ページ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="app-layout compact">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="create-btn" id="create-reservation-btn">
+                    <i class="fas fa-plus"></i> 新規予約
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>マイカレンダー</h3>
+                <ul class="sidebar-list">
+                    <li><a href="#" class="active"><i class="fas fa-calendar"></i> 予約カレンダー</a></li>
+                    <li><a href="#"><i class="fas fa-list"></i> 予約リスト</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>備品カテゴリ</h3>
+                <ul class="sidebar-list" id="item-categories">
+                    <!-- 備品カテゴリがここに入ります -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="flex-container">
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button class="today-btn" id="today-btn">今日</button>
+                            <div class="month-nav">
+                                <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                                <h2 class="current-month" id="current-month">2023年1月</h2>
+                                <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calendar-grid-header">
+                        <div class="day-header">日</div>
+                        <div class="day-header">月</div>
+                        <div class="day-header">火</div>
+                        <div class="day-header">水</div>
+                        <div class="day-header">木</div>
+                        <div class="day-header">金</div>
+                        <div class="day-header">土</div>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- カレンダーグリッドがここに入ります -->
+                    </div>
+                </div>
+                
+                <div class="details-section">
+                    <div class="schedule-container" id="schedule-container">
+                        <h2>予約スケジュール</h2>
+                        <div class="schedule-date" id="schedule-date">2023年1月1日</div>
+                        <div class="schedule-table-container">
+                            <table class="schedule-table" id="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>時間帯</th>
+                                        <th>備品</th>
+                                        <th>利用者</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule-body">
+                                    <!-- スケジュールデータがここに入ります -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="no-reservations" class="no-data">予約はありません</div>
+                        <button id="add-reservation-btn" class="btn primary-btn">新規予約</button>
+                    </div>
+
+                    <div class="reservation-form-container" id="reservation-form">
+                        <h2>予約フォーム</h2>
+                        <form id="create-reservation-form">
+                            <div class="form-group">
+                                <label for="selected-date">選択日:</label>
+                                <input type="text" id="selected-date" readonly>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="user-select">利用者:</label>
+                                    <div class="input-with-button">
+                                        <select id="user-select" required>
+                                            <option value="">選択してください</option>
+                                        </select>
+                                        <button type="button" id="add-user-btn" class="small-btn"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="item-select">備品:</label>
+                                    <div class="input-with-button">
+                                        <select id="item-select" required>
+                                            <option value="">選択してください</option>
+                                        </select>
+                                        <button type="button" id="add-item-btn" class="small-btn"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>予約講時:</label>
+                                <div class="time-slots">
+                                    <div class="time-slot-row">
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-1" value="1" class="time-slot-checkbox">
+                                            <label for="time-slot-1">1講時 (8:50-10:20)</label>
+                                        </div>
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-2" value="2" class="time-slot-checkbox">
+                                            <label for="time-slot-2">2講時 (10:30-12:00)</label>
+                                        </div>
+                                    </div>
+                                    <div class="time-slot-row">
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-3" value="3" class="time-slot-checkbox">
+                                            <label for="time-slot-3">昼休み (12:00-13:00)</label>
+                                        </div>
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-4" value="4" class="time-slot-checkbox">
+                                            <label for="time-slot-4">3講時 (13:00-14:30)</label>
+                                        </div>
+                                    </div>
+                                    <div class="time-slot-row">
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-5" value="5" class="time-slot-checkbox">
+                                            <label for="time-slot-5">4講時 (14:40-16:10)</label>
+                                        </div>
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-6" value="6" class="time-slot-checkbox">
+                                            <label for="time-slot-6">5講時 (16:20-17:50)</label>
+                                        </div>
+                                    </div>
+                                    <div class="time-slot-row">
+                                        <div class="time-slot">
+                                            <input type="checkbox" id="time-slot-7" value="7" class="time-slot-checkbox">
+                                            <label for="time-slot-7">6講時 (18:00-19:30)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn primary-btn">予約する</button>
+                                <button type="button" id="cancel-btn" class="btn secondary-btn">キャンセル</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reservation-list-view">
+                <!-- 予約リスト表示はここに生成されます -->
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル -->
+    <div class="modal" id="add-user-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>新しい利用者を追加</h2>
+            <form id="add-user-form">
+                <div class="form-group">
+                    <label for="new-user-name">利用者名:</label>
+                    <input type="text" id="new-user-name" required>
+                </div>
+                <button type="submit" class="btn primary-btn">追加</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="add-item-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>新しい備品を追加</h2>
+            <form id="add-item-form">
+                <div class="form-group">
+                    <label for="new-item-name">備品名:</label>
+                    <input type="text" id="new-item-name" required>
+                </div>
+                <button type="submit" class="btn primary-btn">追加</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="confirm-delete-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>予約削除の確認</h2>
+            <p>この予約を削除してもよろしいですか？</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn" class="btn danger-btn">削除</button>
+                <button id="cancel-delete-btn" class="btn secondary-btn">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ガイダンスモーダル -->
+    <div class="modal" id="guidance-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>ようこそ！備品貸出予約管理システムへ</h2>
+            <div class="guidance-steps">
+                <div class="guidance-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>予約したい日付を選択</h3>
+                        <p>カレンダーから予約したい日付をクリックします。選択した日付は色で強調表示されます。</p>
+                    </div>
+                </div>
+                <div class="guidance-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>「新規予約」ボタンをクリック</h3>
+                        <p>左サイドバーまたは日付詳細の下部にある「新規予約」ボタンをクリックして予約フォームを開きます。</p>
+                    </div>
+                </div>
+                <div class="guidance-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>予約情報を入力</h3>
+                        <p>利用者、備品、利用時間を選択します。必要に応じて新しい利用者や備品を追加できます。</p>
+                    </div>
+                </div>
+                <div class="guidance-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>予約を確定</h3>
+                        <p>「予約する」ボタンをクリックして予約を確定します。予約はカレンダーと日付詳細に表示されます。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="guidance-actions">
+                <label>
+                    <input type="checkbox" id="dont-show-again"> 次回から表示しない
+                </label>
+                <button id="guidance-close-btn" class="btn primary-btn">始める</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 備品貸出予約管理システム</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html> 
